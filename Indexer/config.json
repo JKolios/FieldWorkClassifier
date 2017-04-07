@@ -1,0 +1,13 @@
+{
+  "apiURL":"0.0.0.0:8090",
+  "elasticURL":"http://elasticsearch1:9200",
+  "elasticUsername":"elastic",
+  "elasticPassword":"changeme",
+  "indices":["elastic_gin"],
+  "defaultIndex":"elastic_gin",
+  "sniffCluster":true,
+  "useAMQP":false,
+  "amqpURL":"amqp://192.168.99.100:32771",
+  "amqpQueues":["elastic_gin"],
+  "ginDebug":true
+}
