@@ -49,14 +49,14 @@ services:
 
   indexer:
     build:
-      context: ./Indexer
+      context: ./Indexer/
     ports:
      - 8090:8090
     restart: on-failure
 
   queryrunner:
     build:
-      context: ./QueryRunner
+      context: ./QueryRunner/
     ports:
      - 8091:8091
     restart: on-failure

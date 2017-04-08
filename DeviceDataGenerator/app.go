@@ -18,7 +18,7 @@ const MAX_LAT = 52.0
 const MIN_LONG = 10.0
 const MAX_LONG = 12.0
 
-const INDEXER_ENDPOINT = "http://localhost:8090/v0/indexDoc"
+const INDEXER_ENDPOINT = "http://localhost:8090/v0/indexDeviceDataDoc"
 
 type DevicePayload struct {
 	CompanyId int       `json:"company_id"`
@@ -79,6 +79,8 @@ func main() {
 			fmt.Errorf("HTTP Error encountered: %v", response.StatusCode)
 			return
 		}
+
+		time.Sleep(time.Millisecond * 500)
 
 	}
 

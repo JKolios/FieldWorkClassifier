@@ -19,7 +19,11 @@ func main() {
 	settings := config.GetConfFromJSONFile("config.json")
 
 	//ES init
-	esClient := esclient.InitESClient(settings.ElasticURL, settings.ElasticUsername, settings.ElasticPassword, settings.Indices, settings.SniffCluster)
+	esClient := esclient.InitESClient(settings.ElasticURL,
+		settings.ElasticUsername,
+		settings.ElasticPassword,
+		settings.Indices,
+		settings.SniffCluster)
 	defer esClient.Stop()
 
 	//Rabbitmq init

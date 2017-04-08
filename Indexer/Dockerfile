@@ -1,10 +1,9 @@
 FROM golang:1.7.5
 EXPOSE 8090
 
-WORKDIR /go/src/app
-COPY . .
-RUN ls -al
-
+RUN mkdir -p /go/src/github.com/JKolios/FieldWorkClassifier/Indexer
+WORKDIR /go/src/github.com/JKolios/FieldWorkClassifier/Indexer
+COPY ./ .
 RUN go install -v
 
-CMD ["app"]
+CMD ["Indexer"]
