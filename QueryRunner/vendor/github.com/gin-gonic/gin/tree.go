@@ -20,7 +20,7 @@ type Param struct {
 // It is therefore safe to read values by the index.
 type Params []Param
 
-// Get returns the value of the first Param which key matches the given name.
+// ByName returns the value of the first Param which key matches the given name.
 // If no matching Param is found, an empty string is returned.
 func (ps Params) Get(name string) (string, bool) {
 	for _, entry := range ps {
@@ -31,8 +31,6 @@ func (ps Params) Get(name string) (string, bool) {
 	return "", false
 }
 
-// ByName returns the value of the first Param which key matches the given name.
-// If no matching Param is found, an empty string is returned.
 func (ps Params) ByName(name string) (va string) {
 	va, _ = ps.Get(name)
 	return
@@ -78,10 +76,9 @@ func countParams(path string) uint8 {
 type nodeType uint8
 
 const (
-	static nodeType = iota // default
-	root
-	param
-	catchAll
+	static   nodeType = 0
+	param    nodeType = 1
+	catchAll nodeType = 2
 )
 
 type node struct {
@@ -241,7 +238,6 @@ func (n *node) addRoute(path string, handlers HandlersChain) {
 		}
 	} else { // Empty tree
 		n.insertChild(numParams, path, fullPath, handlers)
-		n.nType = root
 	}
 }
 
@@ -385,7 +381,7 @@ walk: // Outer loop for walking the tree
 					// Nothing found.
 					// We can recommend to redirect to the same URL without a
 					// trailing slash if a leaf exists for that path.
-					tsr = path == "/" && n.handlers != nil
+					tsr = (path == "/" && n.handlers != nil)
 					return
 				}
 
@@ -417,7 +413,7 @@ walk: // Outer loop for walking the tree
 						}
 
 						// ... but we can't
-						tsr = len(path) == end+1
+						tsr = (len(path) == end+1)
 						return
 					}
 
@@ -427,7 +423,7 @@ walk: // Outer loop for walking the tree
 						// No handle found. Check if a handle for this path + a
 						// trailing slash exists for TSR recommendation
 						n = n.children[0]
-						tsr = n.path == "/" && n.handlers != nil
+						tsr = (n.path == "/" && n.handlers != nil)
 					}
 
 					return
@@ -453,11 +449,6 @@ walk: // Outer loop for walking the tree
 			// We should have reached the node containing the handle.
 			// Check if this node has a handle registered.
 			if handlers = n.handlers; handlers != nil {
-				return
-			}
-
-			if path == "/" && n.wildChild && n.nType != root {
-				tsr = true
 				return
 			}
 
@@ -515,7 +506,7 @@ func (n *node) findCaseInsensitivePath(path string, fixTrailingSlash bool) (ciPa
 
 				// Nothing found. We can recommend to redirect to the same URL
 				// without a trailing slash if a leaf exists for that path
-				found = fixTrailingSlash && path == "/" && n.handlers != nil
+				found = (fixTrailingSlash && path == "/" && n.handlers != nil)
 				return
 			}
 

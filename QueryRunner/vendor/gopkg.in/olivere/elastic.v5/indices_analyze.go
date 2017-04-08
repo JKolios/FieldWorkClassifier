@@ -244,8 +244,8 @@ type IndicesAnalyzeResponseToken struct {
 type IndicesAnalyzeResponseDetail struct {
 	CustomAnalyzer bool          `json:"custom_analyzer"`
 	Charfilters    []interface{} `json:"charfilters"`
-	Analyzer struct {
-		Name string `json:"name"`
+	Analyzer       struct {
+		Name   string `json:"name"`
 		Tokens []struct {
 			Token          string `json:"token"`
 			StartOffset    int    `json:"start_offset"`
@@ -257,7 +257,7 @@ type IndicesAnalyzeResponseDetail struct {
 		} `json:"tokens"`
 	} `json:"analyzer"`
 	Tokenizer struct {
-		Name string `json:"name"`
+		Name   string `json:"name"`
 		Tokens []struct {
 			Token       string `json:"token"`
 			StartOffset int    `json:"start_offset"`
@@ -267,7 +267,7 @@ type IndicesAnalyzeResponseDetail struct {
 		} `json:"tokens"`
 	} `json:"tokenizer"`
 	Tokenfilters []struct {
-		Name string `json:"name"`
+		Name   string `json:"name"`
 		Tokens []struct {
 			Token       string `json:"token"`
 			StartOffset int    `json:"start_offset"`

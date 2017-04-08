@@ -206,9 +206,9 @@ type clusterBlock struct {
 }
 
 type clusterStateMetadata struct {
-	ClusterUUID string                            `json:"cluster_uuid"`
-	Templates   map[string]*indexTemplateMetaData `json:"templates"` // template name -> index template metadata
-	Indices     map[string]*indexMetaData         `json:"indices"`   // index name _> meta data
+	ClusterUUID  string                            `json:"cluster_uuid"`
+	Templates    map[string]*indexTemplateMetaData `json:"templates"` // template name -> index template metadata
+	Indices      map[string]*indexMetaData         `json:"indices"`   // index name _> meta data
 	RoutingTable struct {
 		Indices map[string]*indexRoutingTable `json:"indices"` // index name -> routing table
 	} `json:"routing_table"`

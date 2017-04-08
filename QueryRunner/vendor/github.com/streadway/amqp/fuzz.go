@@ -1,5 +1,4 @@
 // +build gofuzz
-
 package amqp
 
 import "bytes"

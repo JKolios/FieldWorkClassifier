@@ -22,7 +22,7 @@ func canonicalize(rawurls ...string) []string {
 			if u.Scheme == "http" || u.Scheme == "https" {
 				// Trim trailing slashes
 				for len(u.Path) > 0 && u.Path[len(u.Path)-1] == '/' {
-					u.Path = u.Path[0: len(u.Path)-1]
+					u.Path = u.Path[0 : len(u.Path)-1]
 				}
 				u.Fragment = ""
 				u.RawQuery = ""

@@ -425,7 +425,7 @@ type NodesStatsFielddataStats struct {
 	MemorySize        string `json:"memory_size"`
 	MemorySizeInBytes int64  `json:"memory_size_in_bytes"`
 	Evictions         int64  `json:"evictions"`
-	Fields map[string]struct {
+	Fields            map[string]struct {
 		MemorySize        string `json:"memory_size"`
 		MemorySizeInBytes int64  `json:"memory_size_in_bytes"`
 	} `json:"fields"`
@@ -444,7 +444,7 @@ type NodesStatsPercolateStats struct {
 type NodesStatsCompletionStats struct {
 	Size        string `json:"size"`
 	SizeInBytes int64  `json:"size_in_bytes"`
-	Fields map[string]struct {
+	Fields      map[string]struct {
 		Size        string `json:"size"`
 		SizeInBytes int64  `json:"size_in_bytes"`
 	} `json:"fields"`
@@ -538,7 +538,7 @@ type NodesStatsNodeProcess struct {
 	Timestamp           int64 `json:"timestamp"`
 	OpenFileDescriptors int64 `json:"open_file_descriptors"`
 	MaxFileDescriptors  int64 `json:"max_file_descriptors"`
-	CPU struct {
+	CPU                 struct {
 		Percent       int    `json:"percent"`
 		Total         string `json:"total"`
 		TotalInMillis int64  `json:"total_in_millis"`
@@ -572,7 +572,7 @@ type NodesStatsNodeJVMMem struct {
 	NonHeapUsedInBytes      int64  `json:"non_heap_used_in_bytes"`
 	NonHeapCommitted        string `json:"non_heap_committed"`
 	NonHeapCommittedInBytes int64  `json:"non_heap_committed_in_bytes"`
-	Pools map[string]struct {
+	Pools                   map[string]struct {
 		Used            string `json:"used"`
 		UsedInBytes     int64  `json:"used_in_bytes"`
 		Max             string `json:"max"`

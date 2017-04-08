@@ -109,7 +109,7 @@ func (s *AliasesService) Do(ctx context.Context) (*AliasesResult, error) {
 		if ok {
 			aliasesData, ok := indexDataMap["aliases"].(map[string]interface{})
 			if ok {
-				for aliasName := range aliasesData {
+				for aliasName, _ := range aliasesData {
 					aliasRes := aliasResult{AliasName: aliasName}
 					indexOut.Aliases = append(indexOut.Aliases, aliasRes)
 				}

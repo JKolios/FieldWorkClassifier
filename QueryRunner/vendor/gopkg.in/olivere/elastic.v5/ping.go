@@ -31,7 +31,7 @@ type PingService struct {
 type PingResult struct {
 	Name        string `json:"name"`
 	ClusterName string `json:"cluster_name"`
-	Version struct {
+	Version     struct {
 		Number         string `json:"number"`
 		BuildHash      string `json:"build_hash"`
 		BuildTimestamp string `json:"build_timestamp"`

@@ -48,13 +48,15 @@ services:
       - esdata2:/usr/share/elasticsearch/data
 
   indexer:
-    build: ./Indexer
+    build:
+      context: ./Indexer
     ports:
      - 8090:8090
     restart: on-failure
 
   queryrunner:
-    build: ./QueryRunner
+    build:
+      context: ./QueryRunner
     ports:
      - 8091:8091
     restart: on-failure

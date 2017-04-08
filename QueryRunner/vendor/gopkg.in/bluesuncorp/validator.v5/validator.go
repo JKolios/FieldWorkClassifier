@@ -435,7 +435,7 @@ func (v *Validate) structRecursive(top interface{}, current interface{}, s inter
 
 			typeField = structType.Field(i)
 
-			cField = &cachedField{index: i, tag: typeField.Tag.Get(v.tagName), isTime: valueField.Type() == reflect.TypeOf(time.Time{}) || valueField.Type() == reflect.TypeOf(&time.Time{})}
+			cField = &cachedField{index: i, tag: typeField.Tag.Get(v.tagName), isTime: (valueField.Type() == reflect.TypeOf(time.Time{}) || valueField.Type() == reflect.TypeOf(&time.Time{}))}
 
 			if cField.tag == noValidationTag {
 				cs.children--
@@ -549,7 +549,7 @@ func (v *Validate) structRecursive(top interface{}, current interface{}, s inter
 		case reflect.Slice, reflect.Array:
 			cField.isSliceOrArray = true
 			cField.sliceSubtype = cField.typ.Elem()
-			cField.isTimeSubtype = cField.sliceSubtype == reflect.TypeOf(time.Time{}) || cField.sliceSubtype == reflect.TypeOf(&time.Time{})
+			cField.isTimeSubtype = (cField.sliceSubtype == reflect.TypeOf(time.Time{}) || cField.sliceSubtype == reflect.TypeOf(&time.Time{}))
 			cField.sliceSubKind = cField.sliceSubtype.Kind()
 
 			if fieldError := v.fieldWithNameAndValue(top, current, valueField.Interface(), cField.tag, cField.name, false, cField); fieldError != nil {
@@ -561,7 +561,7 @@ func (v *Validate) structRecursive(top interface{}, current interface{}, s inter
 		case reflect.Map:
 			cField.isMap = true
 			cField.mapSubtype = cField.typ.Elem()
-			cField.isTimeSubtype = cField.mapSubtype == reflect.TypeOf(time.Time{}) || cField.mapSubtype == reflect.TypeOf(&time.Time{})
+			cField.isTimeSubtype = (cField.mapSubtype == reflect.TypeOf(time.Time{}) || cField.mapSubtype == reflect.TypeOf(&time.Time{}))
 			cField.mapSubKind = cField.mapSubtype.Kind()
 
 			if fieldError := v.fieldWithNameAndValue(top, current, valueField.Interface(), cField.tag, cField.name, false, cField); fieldError != nil {
@@ -639,13 +639,13 @@ func (v *Validate) fieldWithNameAndValue(val interface{}, current interface{}, f
 			isSingleField = false // cached tags mean nothing because it will be split up while diving
 			cField.isSliceOrArray = true
 			cField.sliceSubtype = cField.typ.Elem()
-			cField.isTimeSubtype = cField.sliceSubtype == reflect.TypeOf(time.Time{}) || cField.sliceSubtype == reflect.TypeOf(&time.Time{})
+			cField.isTimeSubtype = (cField.sliceSubtype == reflect.TypeOf(time.Time{}) || cField.sliceSubtype == reflect.TypeOf(&time.Time{}))
 			cField.sliceSubKind = cField.sliceSubtype.Kind()
 		case reflect.Map:
 			isSingleField = false // cached tags mean nothing because it will be split up while diving
 			cField.isMap = true
 			cField.mapSubtype = cField.typ.Elem()
-			cField.isTimeSubtype = cField.mapSubtype == reflect.TypeOf(time.Time{}) || cField.mapSubtype == reflect.TypeOf(&time.Time{})
+			cField.isTimeSubtype = (cField.mapSubtype == reflect.TypeOf(time.Time{}) || cField.mapSubtype == reflect.TypeOf(&time.Time{}))
 			cField.mapSubKind = cField.mapSubtype.Kind()
 		}
 	} else {

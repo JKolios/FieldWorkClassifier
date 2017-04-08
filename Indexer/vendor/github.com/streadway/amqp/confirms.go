@@ -78,7 +78,6 @@ func (c *confirms) Multiple(confirmed Confirmation) {
 	for c.expecting <= confirmed.DeliveryTag {
 		c.confirm(Confirmation{c.expecting, confirmed.Ack})
 	}
-	c.resequence()
 }
 
 // Close closes all listeners, discarding any out of sequence confirmations

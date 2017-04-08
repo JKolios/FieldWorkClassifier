@@ -37,7 +37,7 @@ var (
 func pctEncode(src []byte) []byte {
 	dst := make([]byte, len(src)*3)
 	for i, b := range src {
-		buf := dst[i*3: i*3+3]
+		buf := dst[i*3 : i*3+3]
 		buf[0] = 0x25
 		buf[1] = hex[b/16]
 		buf[2] = hex[b%16]
