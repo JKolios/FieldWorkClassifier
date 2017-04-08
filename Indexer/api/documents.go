@@ -134,7 +134,7 @@ func indexDeviceDataDoc(client *elastic.Client, indexName string, docType string
 		CompanyId:doc.CompanyId,
 		DriverId:doc.DriverId,
 		Timestamp:doc.Timestamp,
-		Location: [2]float64{doc.Latitude, doc.Longitude},
+		Location: [2]float64{doc.Longitude, doc.Latitude},
 		Accuracy:doc.Accuracy,
 		Speed:doc.Speed,
 	}
