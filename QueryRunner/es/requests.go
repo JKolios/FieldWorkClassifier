@@ -1,4 +1,4 @@
-package es_requests
+package es
 
 import (
 	"code.google.com/p/go-uuid/uuid"

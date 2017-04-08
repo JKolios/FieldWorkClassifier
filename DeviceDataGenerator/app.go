@@ -18,7 +18,7 @@ const MAX_LAT = 52.0
 const MIN_LONG = 10.0
 const MAX_LONG = 12.0
 
-const INDEXER_ENDPOINT = "http://localhost:8090/v0/indexDeviceDataDoc"
+const INDEXER_ENDPOINT = "http://localhost:8090/v0/DeviceData"
 
 type DevicePayload struct {
 	CompanyId int       `json:"company_id"`
@@ -80,7 +80,8 @@ func main() {
 			return
 		}
 
-		time.Sleep(time.Millisecond * 500)
+
+		response.Body.Close()
 
 	}
 

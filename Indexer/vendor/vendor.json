@@ -9,10 +9,10 @@
 			"revisionTime": "2014-12-02T16:54:02Z"
 		},
 		{
-			"checksumSHA1": "3fo3zJeWAJhEEoFluRfCG50SKFs=",
+			"checksumSHA1": "0wNP7EGnOBydIIVkO4RTqsbaiBA=",
 			"path": "github.com/JKolios/FieldWorkClassifier/Common/config",
-			"revision": "acc3de0f7521e0ffac9e027dd581208eae4ab9eb",
-			"revisionTime": "2017-04-08T11:17:38Z"
+			"revision": "fabf866f0689484c4ac536e29e4dc2c60f312abe",
+			"revisionTime": "2017-04-08T13:20:39Z"
 		},
 		{
 			"checksumSHA1": "nIprRke6fyI1GZKTGm2Ee3Om86I=",
@@ -57,6 +57,12 @@
 			"revisionTime": "2015-09-25T10:14:45Z"
 		},
 		{
+			"checksumSHA1": "Ljw6tDew1+WszADby5pBsiVwpuk=",
+			"path": "github.com/gorilla/websocket",
+			"revision": "b6ab76f1fe9803ee1d59e7e5b2a797c1fe897ce5",
+			"revisionTime": "2015-08-11T17:14:32Z"
+		},
+		{
 			"checksumSHA1": "MmQYoOadcQ5goARLjCqlSTAT03Y=",
 			"path": "github.com/manucorporat/sse",
 			"revision": "fe6ea2c8e398672518ef204bf0fbd9af858d0e15",
@@ -67,6 +73,12 @@
 			"path": "github.com/mattn/go-colorable",
 			"revision": "40e4aedc8fabf8c23e040057540867186712faa5",
 			"revisionTime": "2015-06-25T15:46:42Z"
+		},
+		{
+			"checksumSHA1": "ZoM8Dd17NLcuyd02Cf63vrJFvPY=",
+			"path": "github.com/olahol/melody",
+			"revision": "e5f177a9d71d4fe4acb2c70a3e530bbfe3297141",
+			"revisionTime": "2017-02-10T23:01:59Z"
 		},
 		{
 			"checksumSHA1": "rKV8YLkXpeNG1Oix8hlYqVsEFb4=",

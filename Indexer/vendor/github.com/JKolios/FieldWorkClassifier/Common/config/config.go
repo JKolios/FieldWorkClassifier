@@ -8,7 +8,7 @@ import (
 	"log"
 )
 
-type Config struct {
+type Settings struct {
 	ApiURL          string   `json:"apiURL"`
 	ElasticURL      string   `json:"elasticURL"`
 	ElasticUsername string   `json:"ElasticUsername"`
@@ -22,12 +22,12 @@ type Config struct {
 	GinDebug        bool     `json:"ginDebug, omitempty"`
 }
 
-//GetConfFromJSONFile reads application configuration from *filename* and maps it to a Config struct
-func GetConfFromJSONFile(filename string) *Config {
+//GetConfFromJSONFile reads application configuration from *filename* and maps it to a Settings struct
+func GetConfFromJSONFile(filename string) *Settings {
 
 	confContent, err := ioutil.ReadFile(filename)
 	utils.CheckFatalError(err)
-	config := &Config{}
+	config := &Settings{}
 	err = json.Unmarshal(confContent, config)
 	utils.CheckFatalError(err)
 

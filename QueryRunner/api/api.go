@@ -1,0 +1,37 @@
+package api
+
+import (
+	"github.com/JKolios/FieldWorkClassifier/Common/config"
+	"github.com/gin-gonic/gin"
+	"github.com/streadway/amqp"
+	"gopkg.in/olivere/elastic.v5"
+)
+
+func contextInjector(ESClient *elastic.Client, AMQPChannel *amqp.Channel, config *config.Settings) gin.HandlerFunc {
+	return func(c *gin.Context) {
+		c.Set("ESClient", ESClient)
+		c.Set("AMQPChannel", AMQPChannel)
+		c.Set("Config", config)
+
+		c.Next()
+	}
+}
+
+func SetupAPI(ESClient *elastic.Client, AMQPChannel *amqp.Channel, config *config.Settings) *gin.Engine {
+	if !config.GinDebug {
+		gin.SetMode(gin.ReleaseMode)
+	}
+	router := gin.New()
+	router.Use(gin.Logger())
+	router.Use(contextInjector(ESClient, AMQPChannel, config))
+
+	//API v0 endpoints
+	v0 := router.Group("/v0")
+	{
+		v0.GET("/status", status)
+		v0.POST("/indexDoc", indexDoc)
+		v0.GET("/getDoc", getDoc)
+		v0.POST("/termQuery", termQuery)
+	}
+	return router
+}
