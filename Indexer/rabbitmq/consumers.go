@@ -23,6 +23,6 @@ func incomingDocConsumer(incomingChan <-chan amqp.Delivery, esClient *elastic.Cl
 		resp, err := es.IndexDocJSONBytes(esClient, config.DefaultIndex, "document", string(message.Body))
 		log.Println(resp)
 		utils.CheckFatalError(err)
-		log.Printf("Indexed Incoming Doc")
+		log.Println("Indexed Incoming Doc")
 	}
 }

@@ -8,6 +8,7 @@ import (
 	"github.com/JKolios/FieldWorkClassifier/Indexer/api"
 	"github.com/streadway/amqp"
 	"log"
+	"github.com/JKolios/FieldWorkClassifier/Indexer/es"
 )
 
 
@@ -18,13 +19,15 @@ func main() {
 	//Config fetch
 	settings := config.GetConfFromJSONFile("config.json")
 
-	//ES init
+	//ES client init
 	esClient := esclient.InitESClient(settings.ElasticURL,
 		settings.ElasticUsername,
 		settings.ElasticPassword,
-		settings.Indices,
 		settings.SniffCluster)
 	defer esClient.Stop()
+
+	//Create the required indices and set their mappings
+	es.InitIndices(esClient)
 
 	//Rabbitmq init
 	var amqpChannel *amqp.Channel
@@ -40,6 +43,7 @@ func main() {
 		amqpChannel = nil
 	}
 
+	//Create the HTTP and WS endpoints and listen for connections
 	apiInstance := api.SetupAPI(esClient, amqpChannel, settings)
 	apiInstance.Run(settings.ApiURL)
 }

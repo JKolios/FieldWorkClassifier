@@ -38,7 +38,8 @@ func SetupAPI(ESClient *elastic.Client, AMQPChannel *amqp.Channel, conf *config.
 	v0 := router.Group("/v0")
 	{
 		v0.GET("/status", status)
-		v0.POST("/DeviceData", handleIncomingDeviceData)
+		v0.POST("/deviceData", handleIncomingDeviceData)
+		v0.POST("/field", handleIncomingFieldDoc)
 		v0.GET("/wsDeviceData", func(ginContext *gin.Context) {
 
 			//Upgrade the HTTP connection to WebSocket session and add all needed objects

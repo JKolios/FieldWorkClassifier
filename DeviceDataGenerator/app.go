@@ -13,12 +13,12 @@ const MIN_TIMESTAMP = 1493510400
 const MAX_TIMESTAMP = 1496188800
 
 const MIN_LAT = 50.0
-const MAX_LAT = 52.0
+const MAX_LAT = 51.0
 
 const MIN_LONG = 10.0
-const MAX_LONG = 12.0
+const MAX_LONG = 11.0
 
-const INDEXER_ENDPOINT = "http://localhost:8090/v0/DeviceData"
+const INDEXER_ENDPOINT = "http://localhost:8090/v0/deviceData"
 
 type DevicePayload struct {
 	CompanyId int       `json:"company_id"`
@@ -37,7 +37,7 @@ func generateRandomPayload() DevicePayload {
 	latitude := randomFloatBetween(MIN_LAT, MAX_LAT)
 	longitude := randomFloatBetween(MIN_LONG, MAX_LONG)
 	accuracy := randomFloatBetween(MIN_LONG, MAX_LONG)
-	speed := randomFloatBetween(0.5, 5.0)
+	speed := randomFloatBetween(0.2, 5.0)
 
 	return DevicePayload{CompanyId: companyId, DriverId: driverId, Timestamp: timestamp,
 		Latitude: latitude, Longitude: longitude, Accuracy: accuracy, Speed: speed}
