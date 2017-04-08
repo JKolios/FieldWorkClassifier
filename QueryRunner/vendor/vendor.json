@@ -33,6 +33,30 @@
 			"revisionTime": "2017-04-07T23:41:49Z"
 		},
 		{
+			"checksumSHA1": "7Yir/aigYlxBBLuMKLaeEimy5YE=",
+			"path": "github.com/JKolios/FieldWorkClassifier/QueryRunner",
+			"revision": "2c8b2b7e1233441b9bad07a15f3b8c924ebbac30",
+			"revisionTime": "2017-04-08T10:42:03Z"
+		},
+		{
+			"checksumSHA1": "SxBtM7dkKeugct6+20B5TWQ2qK4=",
+			"path": "github.com/JKolios/FieldWorkClassifier/QueryRunner/api",
+			"revision": "2c8b2b7e1233441b9bad07a15f3b8c924ebbac30",
+			"revisionTime": "2017-04-08T10:42:03Z"
+		},
+		{
+			"checksumSHA1": "SwVtnYUxusiRl+0X9I//VF5UG9E=",
+			"path": "github.com/JKolios/FieldWorkClassifier/QueryRunner/es",
+			"revision": "2c8b2b7e1233441b9bad07a15f3b8c924ebbac30",
+			"revisionTime": "2017-04-08T10:42:03Z"
+		},
+		{
+			"checksumSHA1": "XhgtLoPHBkYZZB2q3fXMM8cCfJ8=",
+			"path": "github.com/JKolios/FieldWorkClassifier/QueryRunner/rabbitmq",
+			"revision": "2c8b2b7e1233441b9bad07a15f3b8c924ebbac30",
+			"revisionTime": "2017-04-08T10:42:03Z"
+		},
+		{
 			"checksumSHA1": "5rPfda8jFccr3A6heL+JAmi9K9g=",
 			"path": "github.com/davecgh/go-spew/spew",
 			"revision": "5215b55f46b2b919f50a1df0eaa5886afe4e3b3d",

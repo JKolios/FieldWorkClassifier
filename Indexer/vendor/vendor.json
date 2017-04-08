@@ -33,6 +33,30 @@
 			"revisionTime": "2017-04-07T23:41:49Z"
 		},
 		{
+			"checksumSHA1": "e6wbEUELxOA6n0ketsG3oNDHpQU=",
+			"path": "github.com/JKolios/FieldWorkClassifier/Indexer",
+			"revision": "2c8b2b7e1233441b9bad07a15f3b8c924ebbac30",
+			"revisionTime": "2017-04-08T10:42:03Z"
+		},
+		{
+			"checksumSHA1": "0cqM+vwdk9OExtYNrj5+HnjIa2Y=",
+			"path": "github.com/JKolios/FieldWorkClassifier/Indexer/api",
+			"revision": "2c8b2b7e1233441b9bad07a15f3b8c924ebbac30",
+			"revisionTime": "2017-04-08T10:42:03Z"
+		},
+		{
+			"checksumSHA1": "WCRDe6a6rdcYdsa2k6ieBg6th+I=",
+			"path": "github.com/JKolios/FieldWorkClassifier/Indexer/es",
+			"revision": "2c8b2b7e1233441b9bad07a15f3b8c924ebbac30",
+			"revisionTime": "2017-04-08T10:42:03Z"
+		},
+		{
+			"checksumSHA1": "ISdkYKifxRZGGME3vzbN1lKgRK4=",
+			"path": "github.com/JKolios/FieldWorkClassifier/Indexer/rabbitmq",
+			"revision": "2c8b2b7e1233441b9bad07a15f3b8c924ebbac30",
+			"revisionTime": "2017-04-08T10:42:03Z"
+		},
+		{
 			"checksumSHA1": "SwVtnYUxusiRl+0X9I//VF5UG9E=",
 			"path": "github.com/JKolios/FieldWorkClassifier/QueryRunner/es",
 			"revision": "167a7815f641fb6dd2e5f8eb387e430816b09aeb",
