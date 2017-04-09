@@ -21,6 +21,12 @@
 			"revisionTime": "2017-04-08T16:45:33Z"
 		},
 		{
+			"checksumSHA1": "LQzqNs5tWiJyw5GLVkjakFa3G1Q=",
+			"path": "github.com/JKolios/FieldWorkClassifier/Common/geojson",
+			"revision": "89c4eeaa95b0cea1fc390b35d962568b9f3ccad5",
+			"revisionTime": "2017-04-08T22:09:49Z"
+		},
+		{
 			"checksumSHA1": "QQ+1Tv/tb4y/kkjW5AKlsIEnzGs=",
 			"path": "github.com/JKolios/FieldWorkClassifier/Common/rmqclient",
 			"revision": "acc3de0f7521e0ffac9e027dd581208eae4ab9eb",

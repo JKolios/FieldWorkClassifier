@@ -8,7 +8,13 @@ import (
 	"golang.org/x/net/context"
 	"time"
 	"code.google.com/p/go-uuid/uuid"
+	"github.com/JKolios/FieldWorkClassifier/Common/geojson"
 )
+
+
+/* Field Locations are stored in a nested array on one
+preset elasticsearch document. This increases geosearch performance.*/
+const FIELD_DOC_ID = "field_locations"
 
 /*deviceDataDoc is a representation of the JSON object
  in the form it's received from the mobile devices*/
@@ -29,38 +35,19 @@ type adaptedDataDoc struct {
 	CompanyId int       `json:"company_id"`
 	DriverId  int       `json:"driver_id"`
 	Timestamp time.Time `json:"timestamp"`
-	Location  [2]float64   `json:"location"`
+	Location  geojson.Point   `json:"location"`
 	Accuracy  float64   `json:"accuracy"`
 	Speed     float64   `json:"speed"`
 
 }
 
-/*fieldDoc is a representation of a JSON object
-representing an elasticsearch document containing
-the location of a single (agricultural) field*/
+
+/*FieldDoc is a representation an elasticsearch datatype
+ containing a GeoJSON polygon field*/
 type fieldDoc struct {
-	Location Polygon		`json:"field_location"`
+	FieldPolygons geojson.Multipolygon		`json:"field_polygons"`
 }
 
-/*Polygon is a representation of a JSON object
-containing the coordinates of each edge of a field
-formatted for Elasticsearch's geo_shape type*/
-type Polygon struct {
-	Type string		       `json:"type"`
-	Coordinates [][]Coordinate       `json:"coordinates"`
-}
-
-func NewPolygon(coordinates [][]Coordinate) Polygon {
-	return Polygon{
-		Type:"polygon",
-		Coordinates:coordinates,
-	}
-}
-
-/*Coordinate is a pair of floats representing the latitude and longitude
-  of a single geographic point*/
-
-type Coordinate [2]float64
 
 func handleIncomingDeviceData(ginContext *gin.Context) {
 	var incoming deviceDataDoc
@@ -92,9 +79,9 @@ func handleIncomingDeviceData(ginContext *gin.Context) {
 func handleIncomingFieldDoc(ginContext *gin.Context) {
 	//Assuming that the incoming coordinate data is formatted
 	//as a GeoJSON polygon
-	var incoming [][]Coordinate
+	var incoming [][][]geojson.Coordinate
 	var err error
-	var resp *elastic.IndexResponse
+	var update *elastic.UpdateResponse
 
 	client := ginContext.MustGet("ESClient").(*elastic.Client)
 
@@ -106,14 +93,46 @@ func handleIncomingFieldDoc(ginContext *gin.Context) {
 	}
 
 	log.Printf("%+v", incoming)
-	newDoc := fieldDoc{Location: NewPolygon(incoming)}
+	newDoc := fieldDoc{FieldPolygons: geojson.NewMultipolygon(incoming)}
 	log.Printf("%+v", newDoc)
 
-	resp, err = client.Index().
+	//exists, err := client.Exists().
+	//	Index("fields").
+	//	Type("field_locations").
+	//	Id(FIELD_DOC_ID).
+	//	Do(context.TODO())
+	//
+	//if err != nil {
+	//	log.Println("Failed: Checking for field doc existence")
+	//	ginContext.JSON(http.StatusInternalServerError, exists)
+	//	return
+	//}
+	//
+	//if !exists {
+	//	defaultDoc := fieldDoc{FieldPolygons:NewMultipolygon([][][]Coordinate{})}
+	//
+	//	exists, err := client.Index().
+	//		Index("fields").
+	//		Type("field_locations").
+	//		Id(FIELD_DOC_ID).
+	//		BodyJson(defaultDoc).
+	//		Do(context.TODO())
+	//
+	//	if err != nil {
+	//		log.Println("Failed: Indexing default field doc ")
+	//		ginContext.JSON(http.StatusInternalServerError, exists)
+	//		return
+	//	}
+	//
+	//}
+
+
+	update, err = client.Update().
 		Index("fields").
-		Type("field").
-		Id(uuid.New()).
-		BodyJson(newDoc).
+		Type("field_locations").
+		Id(FIELD_DOC_ID).
+		Doc(newDoc).
+		DocAsUpsert(true).
 		Do(context.TODO())
 
 	if err!=nil {
@@ -122,7 +141,7 @@ func handleIncomingFieldDoc(ginContext *gin.Context) {
 		return
 	}
 
-	ginContext.JSON(http.StatusOK, resp)
+	ginContext.JSON(http.StatusOK, update)
 	return
 
 }
@@ -134,7 +153,7 @@ func indexDeviceDataDoc(client *elastic.Client, indexName string, docType string
 		CompanyId:doc.CompanyId,
 		DriverId:doc.DriverId,
 		Timestamp:doc.Timestamp,
-		Location: [2]float64{doc.Longitude, doc.Latitude},
+		Location: geojson.NewPoint(geojson.Coordinate{doc.Latitude, doc.Longitude}),
 		Accuracy:doc.Accuracy,
 		Speed:doc.Speed,
 	}
