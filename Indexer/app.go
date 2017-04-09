@@ -3,10 +3,7 @@ package main
 import (
 	"github.com/JKolios/FieldWorkClassifier/Common/config"
 	"github.com/JKolios/FieldWorkClassifier/Common/esclient"
-	"github.com/JKolios/FieldWorkClassifier/Common/rmqclient"
-	"github.com/JKolios/FieldWorkClassifier/Indexer/rabbitmq"
 	"github.com/JKolios/FieldWorkClassifier/Indexer/api"
-	"github.com/streadway/amqp"
 	"log"
 	"github.com/JKolios/FieldWorkClassifier/Indexer/es"
 
@@ -21,30 +18,19 @@ func main() {
 	settings := config.GetConfFromJSONFile("config.json")
 
 	//ES client init
-	esClient := esclient.InitESClient(settings.ElasticURL,
+	elasticClient := esclient.InitESClient(settings.ElasticURL,
 		settings.ElasticUsername,
 		settings.ElasticPassword,
 		settings.SniffCluster)
-	defer esClient.Stop()
+	defer elasticClient.Stop()
 
 	//Create the required indices and set their mappings
-	es.InitIndices(esClient)
+	es.InitIndices(elasticClient)
 
-	//Rabbitmq init
-	var amqpChannel *amqp.Channel
-
-	if settings.UseAMQP {
-
-		amqpConnection, amqpChannel := rmqclient.InitAMQPClient(settings)
-		defer amqpConnection.Close()
-		defer amqpChannel.Close()
-
-		rabbitmq.StartSubscribers(amqpChannel, esClient, settings)
-	} else {
-		amqpChannel = nil
-	}
+	//Add percolator queries to the device_data index
+	es.InitPercolators(elasticClient)
 
 	//Create the HTTP and WS endpoints and listen for connections
-	apiInstance := api.SetupAPI(esClient, amqpChannel, settings)
+	apiInstance := api.SetupAPI(elasticClient, settings)
 	apiInstance.Run(settings.ApiURL)
 }

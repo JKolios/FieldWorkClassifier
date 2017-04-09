@@ -4,30 +4,28 @@ import (
 	"github.com/JKolios/FieldWorkClassifier/Common/config"
 	"github.com/gin-gonic/gin"
 	"github.com/olahol/melody"
-	"github.com/streadway/amqp"
 	"gopkg.in/olivere/elastic.v5"
 	"encoding/json"
 	"fmt"
 	"net/http"
+	"github.com/JKolios/FieldWorkClassifier/Common/geojson"
 )
 
-func contextInjector(ESClient *elastic.Client, AMQPChannel *amqp.Channel, conf *config.Settings) gin.HandlerFunc {
+func contextInjector(ESClient *elastic.Client, conf *config.Settings) gin.HandlerFunc {
 	return func(c *gin.Context) {
 		c.Set("ESClient", ESClient)
-		c.Set("AMQPChannel", AMQPChannel)
 		c.Set("Conf", conf)
-
 		c.Next()
 	}
 }
 
-func SetupAPI(ESClient *elastic.Client, AMQPChannel *amqp.Channel, conf *config.Settings) *gin.Engine {
+func SetupAPI(ESClient *elastic.Client, conf *config.Settings) *gin.Engine {
 	if !conf.GinDebug {
 		gin.SetMode(gin.ReleaseMode)
 	}
 	router := gin.New()
 	router.Use(gin.Logger())
-	router.Use(contextInjector(ESClient, AMQPChannel, conf))
+	router.Use(contextInjector(ESClient, conf))
 
 	wsRouter := melody.New()
 	// Allow all origins for websocket connections
@@ -43,7 +41,7 @@ func SetupAPI(ESClient *elastic.Client, AMQPChannel *amqp.Channel, conf *config.
 		v0.GET("/wsDeviceData", func(ginContext *gin.Context) {
 
 			//Upgrade the HTTP connection to WebSocket session and add all needed objects
-			requestKeys := map[string] interface{} {"Client": ESClient, "Index":conf.DefaultIndex}
+			requestKeys := map[string] interface{} {"Client": ESClient}
 			wsRouter.HandleRequestWithKeys(ginContext.Writer, ginContext.Request, requestKeys)
 		})
 	}
@@ -60,7 +58,25 @@ func SetupAPI(ESClient *elastic.Client, AMQPChannel *amqp.Channel, conf *config.
 			return
 		}
 
-		resp, err := indexDeviceDataDoc(ESClient, conf.DefaultIndex, "device_data", incomingDoc)
+		adaptedDoc := adaptedDataDoc{
+			CompanyId:incomingDoc.CompanyId,
+			DriverId:incomingDoc.DriverId,
+			Timestamp:incomingDoc.Timestamp,
+			Location: geojson.NewPoint(geojson.Coordinate{incomingDoc.Longitude, incomingDoc.Latitude}),
+			Accuracy:incomingDoc.Accuracy,
+			Speed:incomingDoc.Speed,
+		}
+
+		activity, err := activityFromDeviceData(ESClient, adaptedDoc)
+
+		if err != nil {
+			errorMessage := fmt.Sprintf("{\"error\": \"%v\"}", err.Error())
+			session.Write([]byte(errorMessage))
+			return
+		}
+
+		resp, err := indexDeviceDataDoc(ESClient, adaptedDoc, activity)
+
 
 		if err != nil {
 			errorMessage := fmt.Sprintf("{\"error\": \"%v\"}", err.Error())

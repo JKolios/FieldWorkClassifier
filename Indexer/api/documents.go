@@ -30,7 +30,7 @@ type deviceDataDoc struct {
 }
 
 /*deviceDataDoc is a representation of the JSON object
- after it is adapted for Elasticsearch's schema*/
+ after it is adapted for querying with Elasticsearch's*/
 type adaptedDataDoc struct {
 	CompanyId int       `json:"company_id"`
 	DriverId  int       `json:"driver_id"`
@@ -38,6 +38,7 @@ type adaptedDataDoc struct {
 	Location  geojson.Point   `json:"location"`
 	Accuracy  float64   `json:"accuracy"`
 	Speed     float64   `json:"speed"`
+	Activity string     `json:"activity"`
 
 }
 
@@ -63,7 +64,24 @@ func handleIncomingDeviceData(ginContext *gin.Context) {
 		return
 	}
 
-	resp, err = indexDeviceDataDoc(client, "device_data", "device_data", incoming)
+	adaptedDoc := adaptedDataDoc{
+		CompanyId:incoming.CompanyId,
+		DriverId:incoming.DriverId,
+		Timestamp:incoming.Timestamp,
+		Location: geojson.NewPoint(geojson.Coordinate{incoming.Longitude, incoming.Latitude}),
+		Accuracy:incoming.Accuracy,
+		Speed:incoming.Speed,
+	}
+
+	activity, err := activityFromDeviceData(client, adaptedDoc)
+
+	if err!=nil {
+		log.Println(err.Error())
+		ginContext.String(http.StatusBadRequest, err.Error())
+		return
+	}
+
+	resp, err = indexDeviceDataDoc(client, adaptedDoc, activity)
 
 	if err!=nil {
 		log.Println(err.Error())
@@ -96,37 +114,6 @@ func handleIncomingFieldDoc(ginContext *gin.Context) {
 	newDoc := fieldDoc{FieldPolygons: geojson.NewMultipolygon(incoming)}
 	log.Printf("%+v", newDoc)
 
-	//exists, err := client.Exists().
-	//	Index("fields").
-	//	Type("field_locations").
-	//	Id(FIELD_DOC_ID).
-	//	Do(context.TODO())
-	//
-	//if err != nil {
-	//	log.Println("Failed: Checking for field doc existence")
-	//	ginContext.JSON(http.StatusInternalServerError, exists)
-	//	return
-	//}
-	//
-	//if !exists {
-	//	defaultDoc := fieldDoc{FieldPolygons:NewMultipolygon([][][]Coordinate{})}
-	//
-	//	exists, err := client.Index().
-	//		Index("fields").
-	//		Type("field_locations").
-	//		Id(FIELD_DOC_ID).
-	//		BodyJson(defaultDoc).
-	//		Do(context.TODO())
-	//
-	//	if err != nil {
-	//		log.Println("Failed: Indexing default field doc ")
-	//		ginContext.JSON(http.StatusInternalServerError, exists)
-	//		return
-	//	}
-	//
-	//}
-
-
 	update, err = client.Update().
 		Index("fields").
 		Type("field_locations").
@@ -146,24 +133,44 @@ func handleIncomingFieldDoc(ginContext *gin.Context) {
 
 }
 
+func activityFromDeviceData (client *elastic.Client, doc adaptedDataDoc) (string, error) {
 
-func indexDeviceDataDoc(client *elastic.Client, indexName string, docType string, doc deviceDataDoc) (*elastic.IndexResponse, error) {
 
-	adaptedDoc := adaptedDataDoc{
-		CompanyId:doc.CompanyId,
-		DriverId:doc.DriverId,
-		Timestamp:doc.Timestamp,
-		Location: geojson.NewPoint(geojson.Coordinate{doc.Latitude, doc.Longitude}),
-		Accuracy:doc.Accuracy,
-		Speed:doc.Speed,
-	}
 
-	resp, err := client.Index().
-		Index(indexName).
-		Type(docType).
-		Id(uuid.New()).
-		BodyJson(adaptedDoc).
+	percolationQuery := elastic.NewPercolatorQuery().
+		DocumentType("device_data").
+		Field("percolation_query").
+		Document(doc)
+
+
+	percolationResult, err := client.Search("device_data").
+		Query(percolationQuery).
 		Do(context.TODO())
 
-	return resp, err
+	log.Println(percolationResult)
+
+	if err != nil || percolationResult.TotalHits() == 0  {
+		return "", err
+	}
+
+
+	return percolationResult.Hits.Hits[0].Id, err
+
+}
+
+
+func indexDeviceDataDoc(client *elastic.Client,  doc adaptedDataDoc, activity string) (*elastic.IndexResponse, error) {
+
+
+
+	doc.Activity = activity
+
+	indexResp, err := client.Index().
+		Index("device_data").
+		Type("device_data").
+		Id(uuid.New()).
+		BodyJson(doc).
+		Do(context.TODO())
+
+	return indexResp, err
 }

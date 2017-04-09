@@ -8,33 +8,40 @@ import (
 )
 var deviceDataMapping = `
 {
-	"mappings":{
-		"device_data":{
-			"properties":{
-				"company_id":{
-					"type":"long"
-				},
-				"driver_id":{
-					"type":"long"
-				},
-				"timestamp":{
-					"type":"date"
-				},
-				"accuracy":{
-					"type":"double"
-				},
-				"speed":{
-					"type":"double"
-				},
-				"location":{
-					"type": "geo_shape",
-					"tree": "quadtree",
-					"precision": "5m",
-					"strategy": "recursive"
-				}
-			}
-		}
-	}
+    "mappings": {
+        "device_data": {
+            "properties": {
+                "company_id": {
+                    "type": "long"
+                },
+                "driver_id": {
+                    "type": "long"
+                },
+                "timestamp": {
+                    "type": "date"
+                },
+                "accuracy": {
+                    "type": "double"
+                },
+                "speed": {
+                    "type": "double"
+                },
+                "location": {
+                    "type": "geo_shape",
+                    "tree": "quadtree",
+                    "precision": "5m",
+                    "strategy": "recursive"
+                }
+            }
+        },
+        "queries": {
+            "properties": {
+                "percolation_query": {
+                    "type": "percolator"
+                }
+            }
+        }
+    }
 }`
 
 var FieldMapping = `{

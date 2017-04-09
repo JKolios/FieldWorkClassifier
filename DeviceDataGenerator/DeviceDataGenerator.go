@@ -37,7 +37,7 @@ func generateRandomPayload() DevicePayload {
 	latitude := randomFloatBetween(MIN_LAT, MAX_LAT)
 	longitude := randomFloatBetween(MIN_LONG, MAX_LONG)
 	accuracy := randomFloatBetween(MIN_LONG, MAX_LONG)
-	speed := randomFloatBetween(0.2, 5.0)
+	speed := randomFloatBetween(0.1, 15.0)
 
 	return DevicePayload{CompanyId: companyId, DriverId: driverId, Timestamp: timestamp,
 		Latitude: latitude, Longitude: longitude, Accuracy: accuracy, Speed: speed}
