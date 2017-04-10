@@ -3,11 +3,6 @@
   "elasticURL":"http://elasticsearch1:9200",
   "elasticUsername":"elastic",
   "elasticPassword":"changeme",
-  "indices":["device_data"],
-  "defaultIndex":"device_data",
-  "sniffCluster":false,
-  "useAMQP":false,
-  "amqpURL":"amqp://192.168.99.100:32771",
-  "amqpQueues":["elastic_gin"],
+  "sniffCluster":true,
   "ginDebug":true
 }
