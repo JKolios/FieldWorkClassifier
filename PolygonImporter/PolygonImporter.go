@@ -31,9 +31,6 @@ func main() {
 		allPolygonCoordinates = append(allPolygonCoordinates, feature.Geometry.Coordinates)
 	}
 
-	fmt.Println(allPolygonCoordinates)
-
-
 		buffer := new(bytes.Buffer)
 		jsonEncoder := json.NewEncoder(buffer)
 		err = jsonEncoder.Encode(allPolygonCoordinates)
@@ -56,8 +53,5 @@ func main() {
 
 
 		response.Body.Close()
-
-
-
-
+		log.Println("Polygons Imported successfully")
 }

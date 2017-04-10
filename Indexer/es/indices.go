@@ -34,10 +34,10 @@ const deviceDataMapping = `
 					"strategy": "recursive"
 				},
 				"activity": {
-					"type": "text"
+					"type": "keyword"
 				},
 				"activity_session_id": {
-					"type": "text"
+					"type": "keyword"
 				}
 			}
 		},
@@ -104,12 +104,18 @@ func InitFieldLocationDocument(elasticClient *elastic.Client) {
 	}
 
 	//Inserts a default document if none already exists.
-	 elasticClient.Index().
+	 _, err:= elasticClient.Index().
 		Index("fields").
 		Type("field_locations").
 		OpType("create").
 		Id(FIELD_DOC_ID).
 		BodyJson(defaultDoc).
 		Do(context.TODO())
+
+	if err !=nil {
+		log.Fatalln("Failed: initializing default field location doc")
+	}
+
+	log.Println("Initialized the default field location doc")
 
 }

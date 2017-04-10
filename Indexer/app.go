@@ -15,6 +15,7 @@ func main() {
 	log.Println("Starting Indexer")
 
 	//Config fetch
+	log.Println("Loading configuration")
 	settings := config.GetConfFromJSONFile("config.json")
 
 	//ES client init

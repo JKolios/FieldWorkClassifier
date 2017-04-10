@@ -84,6 +84,7 @@ func CreateDeviceDataDoc(client *elastic.Client, doc DeviceDataDoc) error {
 		return err
 	}
 
+	log.Printf("Indexed a new device data doc: %+v", adaptedDoc)
 
 	return nil
 }
@@ -128,14 +129,16 @@ func getActivitySessionId (client *elastic.Client, doc AdaptedDataDoc, currentAc
 	queryParams := LatestDataforDriverParams{
 		DriverId: doc.DriverId,
 		CompanyId: doc.CompanyId,
-		Timestamp: doc.Timestamp,
+		Timestamp: doc.Timestamp.Format(time.RFC3339),
 	}
 
 	queryBody := new(bytes.Buffer)
 	LatestDataforDriverTemplate.Execute(queryBody, queryParams)
 
-	searchResult, err := client.Search("device_data").
-		Source(queryBody).
+	searchResult, err := client.Search().
+		Query(elastic.NewRawStringQuery(queryBody.String())).
+		Sort("timestamp", false).
+		Size(1).
 		Do(context.TODO())
 
 	if err != nil {
@@ -153,7 +156,7 @@ func getActivitySessionId (client *elastic.Client, doc AdaptedDataDoc, currentAc
 
 		err := json.Unmarshal(*hit.Source, &latestDoc)
 		if err != nil {
-			// Deserialization failed
+			return "", err
 		}
 	}
 
