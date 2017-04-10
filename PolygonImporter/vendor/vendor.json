@@ -1,0 +1,13 @@
+{
+	"comment": "",
+	"ignore": "test",
+	"package": [
+		{
+			"checksumSHA1": "h1uDY6SPlVS3pXC2YN1LQTERq+o=",
+			"path": "github.com/JKolios/FieldWorkClassifier/Common/geojson",
+			"revision": "2513e486cce7872824567c344c84c42678acf3a5",
+			"revisionTime": "2017-04-10T11:17:50Z"
+		}
+	],
+	"rootPath": "github.com/JKolios/FieldWorkClassifier/PolygonImporter"
+}
