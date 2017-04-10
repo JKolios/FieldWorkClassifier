@@ -27,6 +27,9 @@ func main() {
 	//Create the required indices and set their mappings
 	es.InitIndices(elasticClient)
 
+	//Initialize the field coordinate storage doc
+	es.InitFieldLocationDocument(elasticClient)
+
 	//Add percolator queries to the device_data index
 	es.InitPercolators(elasticClient)
 

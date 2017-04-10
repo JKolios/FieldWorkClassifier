@@ -11,10 +11,9 @@ import (
 	"github.com/JKolios/FieldWorkClassifier/Common/geojson"
 )
 
-
-/* Field Locations are stored in a nested array on one
-preset elasticsearch document. This increases geosearch performance.*/
+/* Field Locations are stored as an array of polygons in an ES document.*/
 const FIELD_DOC_ID = "field_locations"
+
 
 /*deviceDataDoc is a representation of the JSON object
  in the form it's received from the mobile devices*/
@@ -45,7 +44,7 @@ type adaptedDataDoc struct {
 
 /*FieldDoc is a representation an elasticsearch datatype
  containing a GeoJSON polygon field*/
-type fieldDoc struct {
+type FieldDoc struct {
 	FieldPolygons geojson.Multipolygon		`json:"field_polygons"`
 }
 
@@ -111,7 +110,7 @@ func handleIncomingFieldDoc(ginContext *gin.Context) {
 	}
 
 	log.Printf("%+v", incoming)
-	newDoc := fieldDoc{FieldPolygons: geojson.NewMultipolygon(incoming)}
+	newDoc := FieldDoc{FieldPolygons: geojson.NewMultipolygon(incoming)}
 	log.Printf("%+v", newDoc)
 
 	update, err = client.Update().
@@ -139,7 +138,7 @@ func activityFromDeviceData (client *elastic.Client, doc adaptedDataDoc) (string
 
 	percolationQuery := elastic.NewPercolatorQuery().
 		DocumentType("device_data").
-		Field("percolation_query").
+		Field("query").
 		Document(doc)
 
 
@@ -147,10 +146,14 @@ func activityFromDeviceData (client *elastic.Client, doc adaptedDataDoc) (string
 		Query(percolationQuery).
 		Do(context.TODO())
 
-	log.Println(percolationResult)
-
-	if err != nil || percolationResult.TotalHits() == 0  {
+	if err != nil {
+		log.Printf("Error encountered while percolating: %v", err.Error())
 		return "", err
+	}
+
+
+	if percolationResult.TotalHits() == 0  {
+		return "", nil
 	}
 
 

@@ -7,6 +7,7 @@ import (
 	"math/rand"
 	"net/http"
 	"time"
+	"io/ioutil"
 )
 
 const MIN_TIMESTAMP = 1493510400
@@ -68,7 +69,10 @@ func main() {
 			return
 		}
 
-		response, err := http.Post(INDEXER_ENDPOINT, "application/json", buffer)
+		client := &http.Client{}
+		request, err := http.NewRequest("POST", INDEXER_ENDPOINT, buffer)
+		request.Header.Set("Content-Type", "application/json")
+		response, err := client.Do(request)
 
 		if err != nil {
 			fmt.Printf("Error encountered when posting payload: %v", err)
@@ -76,7 +80,10 @@ func main() {
 		}
 
 		if response.StatusCode != http.StatusOK {
-			fmt.Errorf("HTTP Error encountered: %v", response.StatusCode)
+			fmt.Printf("HTTP Error encountered: %v", response.StatusCode)
+			responseBody, _ := ioutil.ReadAll(response.Body)
+			response.Body.Close()
+			fmt.Printf("Response: %v", string(responseBody))
 			return
 		}
 

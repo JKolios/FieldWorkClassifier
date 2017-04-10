@@ -5,46 +5,48 @@ import (
 	"log"
 	"golang.org/x/net/context"
 	"github.com/JKolios/FieldWorkClassifier/Common/utils"
+	"github.com/JKolios/FieldWorkClassifier/Common/geojson"
+	"github.com/JKolios/FieldWorkClassifier/Indexer/api"
 )
-var deviceDataMapping = `
+const deviceDataMapping = `
 {
-    "mappings": {
-        "device_data": {
-            "properties": {
-                "company_id": {
-                    "type": "long"
-                },
-                "driver_id": {
-                    "type": "long"
-                },
-                "timestamp": {
-                    "type": "date"
-                },
-                "accuracy": {
-                    "type": "double"
-                },
-                "speed": {
-                    "type": "double"
-                },
-                "location": {
-                    "type": "geo_shape",
-                    "tree": "quadtree",
-                    "precision": "5m",
-                    "strategy": "recursive"
-                }
-            }
-        },
-        "queries": {
-            "properties": {
-                "percolation_query": {
-                    "type": "percolator"
-                }
-            }
-        }
-    }
+	"mappings": {
+		"device_data": {
+			"properties": {
+				"company_id": {
+					"type": "long"
+				},
+				"driver_id": {
+					"type": "long"
+				},
+				"timestamp": {
+					"type": "date"
+				},
+				"accuracy": {
+					"type": "double"
+				},
+				"speed": {
+					"type": "double"
+				},
+				"location": {
+					"type": "geo_shape",
+					"tree": "quadtree",
+					"precision": "5m",
+					"strategy": "recursive"
+				}
+			}
+		},
+		"queries": {
+			"properties": {
+				"query": {
+					"type": "percolator"
+				}
+			}
+		}
+	}
 }`
 
-var FieldMapping = `{
+const FieldMapping = `{
     "mappings": {
         "field_locations": {
             "properties": {
@@ -58,6 +60,10 @@ var FieldMapping = `{
         }
     }
 }`
+
+
+/* Field Locations are stored as an array of polygons in an ES document.*/
+const FIELD_DOC_ID = "field_locations"
 
 
 var indices = map[string]string{
@@ -88,4 +94,21 @@ func InitIndices(elasticClient *elastic.Client) {
 		_, err = elasticClient.OpenIndex(index).Do(context.TODO())
 		utils.CheckFatalError(err)
 	}
+}
+
+func InitFieldLocationDocument(elasticClient *elastic.Client) {
+
+	defaultDoc := api.FieldDoc{
+		FieldPolygons: geojson.NewMultipolygon([][][]geojson.Coordinate{}),
+	}
+
+	//Inserts a default document if none already exists.
+	 elasticClient.Index().
+		Index("fields").
+		Type("field_locations").
+		OpType("create").
+		Id(FIELD_DOC_ID).
+		BodyJson(defaultDoc).
+		Do(context.TODO())
+
 }
