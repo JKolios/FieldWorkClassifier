@@ -2,14 +2,18 @@ package api
 
 import (
 	"github.com/JKolios/FieldWorkClassifier/Common/config"
+	"github.com/JKolios/FieldWorkClassifier/Common/geojson"
+	"github.com/JKolios/FieldWorkClassifier/Indexer/es"
 	"github.com/gin-gonic/gin"
 	"github.com/olahol/melody"
 	"gopkg.in/olivere/elastic.v5"
 	"encoding/json"
 	"fmt"
 	"net/http"
-	"github.com/JKolios/FieldWorkClassifier/Common/geojson"
+	"log"
+	"golang.org/x/net/context"
 )
+
 
 func contextInjector(ESClient *elastic.Client, conf *config.Settings) gin.HandlerFunc {
 	return func(c *gin.Context) {
@@ -50,7 +54,7 @@ func SetupAPI(ESClient *elastic.Client, conf *config.Settings) *gin.Engine {
 
 	wsRouter.HandleMessage(func(session *melody.Session, msg []byte) {
 
-		var incomingDoc deviceDataDoc
+		var incomingDoc es.DeviceDataDoc
 		err := json.Unmarshal(msg, &incomingDoc)
 		if err != nil {
 			errorMessage := fmt.Sprintf("{\"error\": \"%v\"}", err.Error())
@@ -58,24 +62,7 @@ func SetupAPI(ESClient *elastic.Client, conf *config.Settings) *gin.Engine {
 			return
 		}
 
-		adaptedDoc := adaptedDataDoc{
-			CompanyId:incomingDoc.CompanyId,
-			DriverId:incomingDoc.DriverId,
-			Timestamp:incomingDoc.Timestamp,
-			Location: geojson.NewPoint(geojson.Coordinate{incomingDoc.Longitude, incomingDoc.Latitude}),
-			Accuracy:incomingDoc.Accuracy,
-			Speed:incomingDoc.Speed,
-		}
-
-		activity, err := activityFromDeviceData(ESClient, adaptedDoc)
-
-		if err != nil {
-			errorMessage := fmt.Sprintf("{\"error\": \"%v\"}", err.Error())
-			session.Write([]byte(errorMessage))
-			return
-		}
-
-		resp, err := indexDeviceDataDoc(ESClient, adaptedDoc, activity)
+		err = es.CreateDeviceDataDoc(ESClient, incomingDoc)
 
 
 		if err != nil {
@@ -84,10 +71,75 @@ func SetupAPI(ESClient *elastic.Client, conf *config.Settings) *gin.Engine {
 			return
 		}
 
-		response := fmt.Sprintf("{\"indexed\": \"%v\"}", resp.Created)
-		session.Write([]byte(response))
+		session.Write([]byte("{\"indexed\": true}"))
 
 	})
 
 	return router
+}
+
+func handleIncomingDeviceData(ginContext *gin.Context) {
+	var incoming es.DeviceDataDoc
+	var err error
+	var resp *elastic.IndexResponse
+
+	client := ginContext.MustGet("ESClient").(*elastic.Client)
+
+	err = ginContext.Bind(&incoming)
+	if err != nil {
+		log.Println(err.Error())
+		ginContext.String(http.StatusBadRequest, err.Error())
+		return
+	}
+
+	err = es.CreateDeviceDataDoc(client, incoming)
+
+	if err!=nil {
+		log.Println(err.Error())
+		ginContext.String(http.StatusBadRequest, err.Error())
+		return
+	}
+
+	ginContext.JSON(http.StatusOK, resp)
+	return
+
+}
+
+func handleIncomingFieldDoc(ginContext *gin.Context) {
+	//Assuming that the incoming coordinate data is formatted
+	//as a GeoJSON polygon
+	var incoming [][][]geojson.Coordinate
+	var err error
+	var update *elastic.UpdateResponse
+
+	client := ginContext.MustGet("ESClient").(*elastic.Client)
+
+	err = ginContext.Bind(&incoming)
+	if err != nil {
+		log.Println(err.Error())
+		ginContext.String(http.StatusBadRequest, err.Error())
+		return
+	}
+
+	log.Printf("%+v", incoming)
+	newDoc := es.FieldDoc{FieldPolygons: geojson.NewMultipolygon(incoming)}
+	log.Printf("%+v", newDoc)
+
+	update, err = client.Update().
+		Index("fields").
+		Type("field_locations").
+		Id(es.FIELD_DOC_ID).
+		Doc(newDoc).
+		DocAsUpsert(true).
+		Do(context.TODO())
+
+	if err!=nil {
+		log.Println(err.Error())
+		ginContext.String(http.StatusBadRequest, err.Error())
+		return
+	}
+
+	ginContext.JSON(http.StatusOK, update)
+	return
+
 }

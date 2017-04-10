@@ -6,7 +6,6 @@ import (
 	"golang.org/x/net/context"
 	"github.com/JKolios/FieldWorkClassifier/Common/utils"
 	"github.com/JKolios/FieldWorkClassifier/Common/geojson"
-	"github.com/JKolios/FieldWorkClassifier/Indexer/api"
 )
 const deviceDataMapping = `
 {
@@ -33,6 +32,12 @@ const deviceDataMapping = `
 					"tree": "quadtree",
 					"precision": "5m",
 					"strategy": "recursive"
+				},
+				"activity": {
+					"type": "text"
+				},
+				"activity_session_id": {
+					"type": "text"
 				}
 			}
 		},
@@ -60,10 +65,6 @@ const FieldMapping = `{
         }
     }
 }`
-
-
-/* Field Locations are stored as an array of polygons in an ES document.*/
-const FIELD_DOC_ID = "field_locations"
 
 
 var indices = map[string]string{
@@ -98,7 +99,7 @@ func InitIndices(elasticClient *elastic.Client) {
 
 func InitFieldLocationDocument(elasticClient *elastic.Client) {
 
-	defaultDoc := api.FieldDoc{
+	defaultDoc := FieldDoc{
 		FieldPolygons: geojson.NewMultipolygon([][][]geojson.Coordinate{}),
 	}
 
