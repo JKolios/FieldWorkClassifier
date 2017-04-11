@@ -32,3 +32,16 @@ func NewPoint(coordinates Coordinate) Point {
   latitude pairs*/
 
 type Coordinate [2]float64
+
+
+type FeatureCollection struct {
+	Features []Feature `json:"features"`
+}
+
+type Feature struct {
+	Geometry Geometry `json:"geometry"`
+}
+
+type Geometry struct {
+	Coordinates [][]Coordinate `json:"coordinates"`
+}

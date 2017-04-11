@@ -51,7 +51,7 @@ type FieldDoc struct {
 }
 
 
-func CreateDeviceDataDoc(client *elastic.Client, doc DeviceDataDoc) error {
+func CreateDeviceDataDoc(client *elastic.Client, doc DeviceDataDoc) (elastic.IndexResponse,error) {
 
 	adaptedDoc := AdaptedDataDoc{
 	CompanyId:doc.CompanyId,
@@ -65,28 +65,28 @@ func CreateDeviceDataDoc(client *elastic.Client, doc DeviceDataDoc) error {
 	activity, err := GetActivityFromDeviceData(client, adaptedDoc)
 
 	if err!=nil {
-		return err
+		return elastic.IndexResponse{}, err
 	}
 
 	adaptedDoc.Activity = activity
 
-	activitySessionId, err := getActivitySessionId(client, adaptedDoc, activity)
+	activitySessionId, err := getActivitySessionId(client, adaptedDoc)
 
 	if err!=nil {
-		return err
+		return elastic.IndexResponse{}, err
 	}
 
 	adaptedDoc.ActivitySessionId = activitySessionId
 
-	_, err = IndexDeviceDataDoc(client, adaptedDoc)
+	response, err := IndexDeviceDataDoc(client, adaptedDoc)
 
 	if err!=nil {
-		return err
+		return elastic.IndexResponse{}, err
 	}
 
-	log.Printf("Indexed a new device data doc: %+v", adaptedDoc)
+	//log.Printf("Indexed a new device data doc: %+v", adaptedDoc)
 
-	return nil
+	return *response, nil
 }
 
 
@@ -114,7 +114,7 @@ func GetActivityFromDeviceData(client *elastic.Client, doc AdaptedDataDoc) (stri
 	// 0 matches means the activity cannot be classified into the given categories
 	// >1 matches should not be possible given the problem description
 	if percolationResult.TotalHits() != 1  {
-		return "", nil
+		return "other", nil
 	}
 
 
@@ -122,14 +122,14 @@ func GetActivityFromDeviceData(client *elastic.Client, doc AdaptedDataDoc) (stri
 
 }
 
-func getActivitySessionId (client *elastic.Client, doc AdaptedDataDoc, currentActivity string) (string, error) {
+func getActivitySessionId (client *elastic.Client, incomingDoc AdaptedDataDoc) (string, error) {
 
 	//Get the latest document with the same driver and company id
 	//For the same day
 	queryParams := LatestDataforDriverParams{
-		DriverId: doc.DriverId,
-		CompanyId: doc.CompanyId,
-		Timestamp: doc.Timestamp.Format(time.RFC3339),
+		DriverId:  incomingDoc.DriverId,
+		CompanyId: incomingDoc.CompanyId,
+		Timestamp: incomingDoc.Timestamp.Format(time.RFC3339),
 	}
 
 	queryBody := new(bytes.Buffer)
@@ -160,7 +160,7 @@ func getActivitySessionId (client *elastic.Client, doc AdaptedDataDoc, currentAc
 		}
 	}
 
-	if latestDoc.Activity == currentActivity {
+	if latestDoc.Activity == incomingDoc.Activity {
 		return latestDoc.ActivitySessionId, nil
 	} else {
 		return uuid.New(), nil

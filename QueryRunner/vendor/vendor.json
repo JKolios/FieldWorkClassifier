@@ -9,28 +9,22 @@
 			"revisionTime": "2014-12-02T16:54:02Z"
 		},
 		{
-			"checksumSHA1": "0wNP7EGnOBydIIVkO4RTqsbaiBA=",
+			"checksumSHA1": "2ahBE9iqiyAOldz/EOafl8k9FPU=",
 			"path": "github.com/JKolios/FieldWorkClassifier/Common/config",
-			"revision": "fabf866f0689484c4ac536e29e4dc2c60f312abe",
-			"revisionTime": "2017-04-08T13:20:39Z"
+			"revision": "96ed94acde645895c3a5c03be511565a5291f31c",
+			"revisionTime": "2017-04-10T22:21:40Z"
 		},
 		{
 			"checksumSHA1": "Cy79SERk1+phaiKVLRK7awIZoVA=",
 			"path": "github.com/JKolios/FieldWorkClassifier/Common/esclient",
-			"revision": "e80300ed55ef19321a95fe2ade8515d303443d4d",
-			"revisionTime": "2017-04-08T16:45:33Z"
-		},
-		{
-			"checksumSHA1": "QQ+1Tv/tb4y/kkjW5AKlsIEnzGs=",
-			"path": "github.com/JKolios/FieldWorkClassifier/Common/rmqclient",
-			"revision": "acc3de0f7521e0ffac9e027dd581208eae4ab9eb",
-			"revisionTime": "2017-04-08T11:17:38Z"
+			"revision": "96ed94acde645895c3a5c03be511565a5291f31c",
+			"revisionTime": "2017-04-10T22:21:40Z"
 		},
 		{
 			"checksumSHA1": "MMgIl7LxpZXGuP7Ja44IBZ+Zk7Q=",
 			"path": "github.com/JKolios/FieldWorkClassifier/Common/utils",
-			"revision": "acc3de0f7521e0ffac9e027dd581208eae4ab9eb",
-			"revisionTime": "2017-04-08T11:17:38Z"
+			"revision": "96ed94acde645895c3a5c03be511565a5291f31c",
+			"revisionTime": "2017-04-10T22:21:40Z"
 		},
 		{
 			"checksumSHA1": "5rPfda8jFccr3A6heL+JAmi9K9g=",
@@ -67,12 +61,6 @@
 			"path": "github.com/mattn/go-colorable",
 			"revision": "40e4aedc8fabf8c23e040057540867186712faa5",
 			"revisionTime": "2015-06-25T15:46:42Z"
-		},
-		{
-			"checksumSHA1": "rKV8YLkXpeNG1Oix8hlYqVsEFb4=",
-			"path": "github.com/streadway/amqp",
-			"revision": "2e25825abdbd7752ff08b270d313b93519a0a232",
-			"revisionTime": "2016-03-11T21:55:03Z"
 		},
 		{
 			"checksumSHA1": "hKZGpbFuCrkE4s1vxubKK1aFlfI=",

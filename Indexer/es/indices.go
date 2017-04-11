@@ -103,19 +103,31 @@ func InitFieldLocationDocument(elasticClient *elastic.Client) {
 		FieldPolygons: geojson.NewMultipolygon([][][]geojson.Coordinate{}),
 	}
 
-	//Inserts a default document if none already exists.
-	 _, err:= elasticClient.Index().
+	exists, err := elasticClient.Exists().
 		Index("fields").
 		Type("field_locations").
-		OpType("create").
 		Id(FIELD_DOC_ID).
-		BodyJson(defaultDoc).
 		Do(context.TODO())
 
 	if err !=nil {
-		log.Fatalln("Failed: initializing default field location doc")
+		log.Fatalf("Failed: checking for existence of the field location doc: %v", err.Error())
 	}
 
-	log.Println("Initialized the default field location doc")
+	if ! exists {
+
+		//Inserts a default document if none already exists.
+		_, err := elasticClient.Index().
+			Index("fields").
+			Type("field_locations").
+			Id(FIELD_DOC_ID).
+			BodyJson(defaultDoc).
+			Do(context.TODO())
+
+		if err != nil {
+			log.Fatalf("Failed: initializing default field location doc: %v", err.Error())
+		}
+
+		log.Println("Initialized the default field location doc")
+	}
 
 }

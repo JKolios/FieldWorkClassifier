@@ -11,7 +11,7 @@ const latestDataForDriverQuery = `
 				"range": {
 					"timestamp": {
 						"gte": "{{.Timestamp}}||/d",
-						"lte": "{{.Timestamp}}||+1d/d"
+						"lte": "{{.Timestamp}}"
 					}
 				}
 			}, {

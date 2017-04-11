@@ -2,7 +2,6 @@ package main
 
 import (
 	"encoding/json"
-	"fmt"
 	"net/http"
 	"bytes"
 	"io/ioutil"
@@ -35,19 +34,19 @@ func main() {
 		jsonEncoder := json.NewEncoder(buffer)
 		err = jsonEncoder.Encode(allPolygonCoordinates)
 		if err != nil {
-			fmt.Printf("Error encountered when JSON encoding payload: %v", err)
+			log.Printf("Error encountered when JSON encoding payload: %v", err)
 			return
 		}
 
 		response, err := http.Post(FIELD_ENDPOINT, "application/json", buffer)
 
 		if err != nil {
-			fmt.Printf("Error encountered when posting payload: %v", err)
+			log.Printf("Error encountered when posting payload: %v", err)
 			return
 		}
 
 		if response.StatusCode != http.StatusOK {
-			fmt.Printf("HTTP Error encountered: %v", response.StatusCode)
+			log.Printf("HTTP Error encountered: %v", response.StatusCode)
 			return
 		}
 

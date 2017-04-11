@@ -27,6 +27,7 @@ func SetupAPI(ESClient *elastic.Client, conf *config.Settings) *gin.Engine {
 	v0 := router.Group("/v0")
 	{
 		v0.GET("/status", status)
+		v0.POST("/timeTableQuery", handleTimeTableQuery)
 	}
 
 	return router

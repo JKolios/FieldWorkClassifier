@@ -4,5 +4,5 @@
   "elasticUsername":"elastic",
   "elasticPassword":"changeme",
   "sniffCluster":true,
-  "ginDebug":true
+  "ginDebug":false
 }

@@ -102,9 +102,9 @@ const repairingPercolator = `
 `
 
 var percolators = map[string]string{
-	"is_driving": drivingPercolator,
-	"is_cultivating": cultivatingPercolator,
-	"is_repairing": repairingPercolator,
+	"Driving": drivingPercolator,
+	"Cultivating": cultivatingPercolator,
+	"Repairing": repairingPercolator,
 }
 
 func InitPercolators(elasticClient *elastic.Client) {

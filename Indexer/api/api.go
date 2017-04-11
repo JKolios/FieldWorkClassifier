@@ -2,7 +2,6 @@ package api
 
 import (
 	"github.com/JKolios/FieldWorkClassifier/Common/config"
-	"github.com/JKolios/FieldWorkClassifier/Common/geojson"
 	"github.com/JKolios/FieldWorkClassifier/Indexer/es"
 	"github.com/gin-gonic/gin"
 	"github.com/olahol/melody"
@@ -10,8 +9,6 @@ import (
 	"encoding/json"
 	"fmt"
 	"net/http"
-	"log"
-	"golang.org/x/net/context"
 )
 
 
@@ -55,6 +52,7 @@ func SetupAPI(ESClient *elastic.Client, conf *config.Settings) *gin.Engine {
 	wsRouter.HandleMessage(func(session *melody.Session, msg []byte) {
 
 		var incomingDoc es.DeviceDataDoc
+		var resp elastic.IndexResponse
 		err := json.Unmarshal(msg, &incomingDoc)
 		if err != nil {
 			errorMessage := fmt.Sprintf("{\"error\": \"%v\"}", err.Error())
@@ -62,7 +60,7 @@ func SetupAPI(ESClient *elastic.Client, conf *config.Settings) *gin.Engine {
 			return
 		}
 
-		err = es.CreateDeviceDataDoc(ESClient, incomingDoc)
+		resp, err = es.CreateDeviceDataDoc(ESClient, incomingDoc)
 
 
 		if err != nil {
@@ -71,75 +69,17 @@ func SetupAPI(ESClient *elastic.Client, conf *config.Settings) *gin.Engine {
 			return
 		}
 
-		session.Write([]byte("{\"indexed\": true}"))
+		jsonResponse, err := json.Marshal(resp)
+
+		if err != nil {
+			errorMessage := fmt.Sprintf("{\"error\": \"%v\"}", err.Error())
+			session.Write([]byte(errorMessage))
+			return
+		}
+
+		session.Write(jsonResponse)
 
 	})
 
 	return router
-}
-
-func handleIncomingDeviceData(ginContext *gin.Context) {
-	var incoming es.DeviceDataDoc
-	var err error
-	var resp *elastic.IndexResponse
-
-	client := ginContext.MustGet("ESClient").(*elastic.Client)
-
-	err = ginContext.Bind(&incoming)
-	if err != nil {
-		log.Println(err.Error())
-		ginContext.String(http.StatusBadRequest, err.Error())
-		return
-	}
-
-	err = es.CreateDeviceDataDoc(client, incoming)
-
-	if err!=nil {
-		log.Println(err.Error())
-		ginContext.String(http.StatusBadRequest, err.Error())
-		return
-	}
-
-	ginContext.JSON(http.StatusOK, resp)
-	return
-
-}
-
-func handleIncomingFieldDoc(ginContext *gin.Context) {
-	//Assuming that the incoming coordinate data is formatted
-	//as a GeoJSON polygon
-	var incoming [][][]geojson.Coordinate
-	var err error
-	var update *elastic.UpdateResponse
-
-	client := ginContext.MustGet("ESClient").(*elastic.Client)
-
-	err = ginContext.Bind(&incoming)
-	if err != nil {
-		log.Println(err.Error())
-		ginContext.String(http.StatusBadRequest, err.Error())
-		return
-	}
-
-	log.Printf("%+v", incoming)
-	newDoc := es.FieldDoc{FieldPolygons: geojson.NewMultipolygon(incoming)}
-	log.Printf("%+v", newDoc)
-
-	update, err = client.Update().
-		Index("fields").
-		Type("field_locations").
-		Id(es.FIELD_DOC_ID).
-		Doc(newDoc).
-		DocAsUpsert(true).
-		Do(context.TODO())
-
-	if err!=nil {
-		log.Println(err.Error())
-		ginContext.String(http.StatusBadRequest, err.Error())
-		return
-	}
-
-	ginContext.JSON(http.StatusOK, update)
-	return
-
 }

@@ -394,8 +394,7 @@ func (s *SearchService) Do(ctx context.Context) (*SearchResult, error) {
 }
 
 // SearchResult is the result of a search in Elasticsearch.
-type
-	SearchResult struct {
+type SearchResult struct {
 	TookInMillis int64          `json:"took"`              // search time in milliseconds
 	ScrollId     string         `json:"_scroll_id"`        // only used with Scroll and Scan operations
 	Hits         *SearchHits    `json:"hits"`              // the actual search hits

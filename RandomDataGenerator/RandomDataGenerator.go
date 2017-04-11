@@ -66,6 +66,7 @@ func main() {
 		buffer := new(bytes.Buffer)
 		jsonEncoder := json.NewEncoder(buffer)
 		err := jsonEncoder.Encode(randomPayload)
+		log.Println(buffer)
 		if err != nil {
 			fmt.Printf("Error encountered when JSON encoding payload: %v", err)
 			return
