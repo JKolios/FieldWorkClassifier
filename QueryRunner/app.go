@@ -1,13 +1,11 @@
 package main
 
 import (
-	"github.com/JKolios/FieldWorkClassifier/QueryRunner/api"
 	"github.com/JKolios/FieldWorkClassifier/Common/config"
 	"github.com/JKolios/FieldWorkClassifier/Common/esclient"
+	"github.com/JKolios/FieldWorkClassifier/QueryRunner/api"
 	"log"
 )
-
-
 
 func main() {
 

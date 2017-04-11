@@ -1,11 +1,11 @@
 package api
 
 import (
+	"github.com/JKolios/FieldWorkClassifier/QueryRunner/es"
 	"github.com/gin-gonic/gin"
+	"gopkg.in/olivere/elastic.v5"
 	"log"
 	"net/http"
-	"gopkg.in/olivere/elastic.v5"
-	"github.com/JKolios/FieldWorkClassifier/QueryRunner/es"
 )
 
 func handleTimeTableQuery(ginContext *gin.Context) {
@@ -24,7 +24,7 @@ func handleTimeTableQuery(ginContext *gin.Context) {
 
 	response, err = es.GetDriverDailyTimetable(client, incoming)
 
-	if err!=nil {
+	if err != nil {
 		log.Println(err.Error())
 		ginContext.String(http.StatusBadRequest, err.Error())
 		return

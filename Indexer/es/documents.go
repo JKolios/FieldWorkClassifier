@@ -1,22 +1,21 @@
 package es
 
 import (
-	"log"
-	"gopkg.in/olivere/elastic.v5"
-	"golang.org/x/net/context"
-	"time"
-	"code.google.com/p/go-uuid/uuid"
-	"github.com/JKolios/FieldWorkClassifier/Common/geojson"
 	"bytes"
+	"code.google.com/p/go-uuid/uuid"
 	"encoding/json"
+	"github.com/JKolios/FieldWorkClassifier/Common/geojson"
+	"context"
+	"gopkg.in/olivere/elastic.v5"
+	"log"
+	"time"
 )
 
 /* Field Locations are stored as an array of polygons in an ES document.*/
 const FIELD_DOC_ID = "field_locations"
 
-
 /*DeviceDataDoc is a representation of the JSON object
- in the form it's received from the mobile devices*/
+in the form it's received from the mobile devices*/
 type DeviceDataDoc struct {
 	CompanyId int       `json:"company_id"`
 	DriverId  int       `json:"driver_id"`
@@ -25,46 +24,41 @@ type DeviceDataDoc struct {
 	Longitude float64   `json:"longitude"`
 	Accuracy  float64   `json:"accuracy"`
 	Speed     float64   `json:"speed"`
-
 }
-
 
 /*AdaptedDataDoc is a representation of the JSON object
- after it is adapted for querying with Elasticsearch*/
+after it is adapted for querying with Elasticsearch*/
 type AdaptedDataDoc struct {
-	CompanyId int       `json:"company_id"`
-	DriverId  int       `json:"driver_id"`
-	Timestamp time.Time `json:"timestamp"`
-	Location  geojson.Point   `json:"location"`
-	Accuracy  float64   `json:"accuracy"`
-	Speed     float64   `json:"speed"`
-	Activity  string     `json:"activity"`
-	ActivitySessionId string `json:"activity_session_id"`
-
+	CompanyId         int           `json:"company_id"`
+	DriverId          int           `json:"driver_id"`
+	Timestamp         time.Time     `json:"timestamp"`
+	Location          geojson.Point `json:"location"`
+	Accuracy          float64       `json:"accuracy"`
+	Speed             float64       `json:"speed"`
+	Activity          string        `json:"activity"`
+	ActivitySessionId string        `json:"activity_session_id"`
 }
-
 
 /*FieldDoc is a representation an elasticsearch datatype
- containing a GeoJSON polygon field*/
+containing a GeoJSON polygon field*/
 type FieldDoc struct {
-	FieldPolygons geojson.Multipolygon		`json:"field_polygons"`
+	FieldPolygons geojson.Multipolygon `json:"field_polygons"`
 }
 
-
-func CreateDeviceDataDoc(client *elastic.Client, doc DeviceDataDoc) (elastic.IndexResponse,error) {
+func CreateDeviceDataDoc(client *elastic.Client, doc DeviceDataDoc) (elastic.IndexResponse, error) {
 
 	adaptedDoc := AdaptedDataDoc{
-	CompanyId:doc.CompanyId,
-	DriverId:doc.DriverId,
-	Timestamp:doc.Timestamp,
-	Location: geojson.NewPoint(geojson.Coordinate{doc.Longitude, doc.Latitude}),
-	Accuracy:doc.Accuracy,
-	Speed:doc.Speed,
+		CompanyId: doc.CompanyId,
+		DriverId:  doc.DriverId,
+		Timestamp: doc.Timestamp,
+		Location:  geojson.NewPoint(geojson.Coordinate{doc.Longitude, doc.Latitude}),
+		Accuracy:  doc.Accuracy,
+		Speed:     doc.Speed,
 	}
 
 	activity, err := GetActivityFromDeviceData(client, adaptedDoc)
 
-	if err!=nil {
+	if err != nil {
 		return elastic.IndexResponse{}, err
 	}
 
@@ -72,7 +66,7 @@ func CreateDeviceDataDoc(client *elastic.Client, doc DeviceDataDoc) (elastic.Ind
 
 	activitySessionId, err := getActivitySessionId(client, adaptedDoc)
 
-	if err!=nil {
+	if err != nil {
 		return elastic.IndexResponse{}, err
 	}
 
@@ -80,26 +74,19 @@ func CreateDeviceDataDoc(client *elastic.Client, doc DeviceDataDoc) (elastic.Ind
 
 	response, err := IndexDeviceDataDoc(client, adaptedDoc)
 
-	if err!=nil {
+	if err != nil {
 		return elastic.IndexResponse{}, err
 	}
-
-	//log.Printf("Indexed a new device data doc: %+v", adaptedDoc)
 
 	return *response, nil
 }
 
-
-
 func GetActivityFromDeviceData(client *elastic.Client, doc AdaptedDataDoc) (string, error) {
-
-
 
 	percolationQuery := elastic.NewPercolatorQuery().
 		DocumentType("device_data").
 		Field("query").
 		Document(doc)
-
 
 	percolationResult, err := client.Search("device_data").
 		Query(percolationQuery).
@@ -110,19 +97,17 @@ func GetActivityFromDeviceData(client *elastic.Client, doc AdaptedDataDoc) (stri
 		return "", err
 	}
 
-
 	// 0 matches means the activity cannot be classified into the given categories
 	// >1 matches should not be possible given the problem description
-	if percolationResult.TotalHits() != 1  {
+	if percolationResult.TotalHits() != 1 {
 		return "other", nil
 	}
-
 
 	return percolationResult.Hits.Hits[0].Id, err
 
 }
 
-func getActivitySessionId (client *elastic.Client, incomingDoc AdaptedDataDoc) (string, error) {
+func getActivitySessionId(client *elastic.Client, incomingDoc AdaptedDataDoc) (string, error) {
 
 	//Get the latest document with the same driver and company id
 	//For the same day
@@ -167,8 +152,7 @@ func getActivitySessionId (client *elastic.Client, incomingDoc AdaptedDataDoc) (
 	}
 }
 
-
-func IndexDeviceDataDoc(client *elastic.Client,  doc AdaptedDataDoc) (*elastic.IndexResponse, error) {
+func IndexDeviceDataDoc(client *elastic.Client, doc AdaptedDataDoc) (*elastic.IndexResponse, error) {
 
 	indexResp, err := client.Index().
 		Index("device_data").

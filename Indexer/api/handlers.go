@@ -1,13 +1,13 @@
 package api
 
 import (
-	"github.com/gin-gonic/gin"
 	"github.com/JKolios/FieldWorkClassifier/Common/geojson"
+	"github.com/JKolios/FieldWorkClassifier/Indexer/es"
+	"github.com/gin-gonic/gin"
+	"golang.org/x/net/context"
+	"gopkg.in/olivere/elastic.v5"
 	"log"
 	"net/http"
-	"github.com/JKolios/FieldWorkClassifier/Indexer/es"
-	"gopkg.in/olivere/elastic.v5"
-	"golang.org/x/net/context"
 )
 
 func handleIncomingDeviceData(ginContext *gin.Context) {
@@ -15,7 +15,6 @@ func handleIncomingDeviceData(ginContext *gin.Context) {
 	var incoming es.DeviceDataDoc
 	var resp elastic.IndexResponse
 	var err error
-
 
 	client := ginContext.MustGet("ESClient").(*elastic.Client)
 
@@ -28,7 +27,7 @@ func handleIncomingDeviceData(ginContext *gin.Context) {
 
 	resp, err = es.CreateDeviceDataDoc(client, incoming)
 
-	if err!=nil {
+	if err != nil {
 		log.Println(err.Error())
 		ginContext.String(http.StatusBadRequest, err.Error())
 		return
@@ -55,9 +54,7 @@ func handleIncomingFieldDoc(ginContext *gin.Context) {
 		return
 	}
 
-	log.Printf("%+v", incoming)
 	newDoc := es.FieldDoc{FieldPolygons: geojson.NewMultipolygon(incoming)}
-	log.Printf("%+v", newDoc)
 
 	update, err = client.Update().
 		Index("fields").
@@ -67,7 +64,7 @@ func handleIncomingFieldDoc(ginContext *gin.Context) {
 		DocAsUpsert(true).
 		Do(context.TODO())
 
-	if err!=nil {
+	if err != nil {
 		log.Println(err.Error())
 		ginContext.String(http.StatusBadRequest, err.Error())
 		return

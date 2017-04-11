@@ -1,12 +1,13 @@
 package es
 
 import (
+	"github.com/JKolios/FieldWorkClassifier/Common/geojson"
+	"github.com/JKolios/FieldWorkClassifier/Common/utils"
+	"golang.org/x/net/context"
 	"gopkg.in/olivere/elastic.v5"
 	"log"
-	"golang.org/x/net/context"
-	"github.com/JKolios/FieldWorkClassifier/Common/utils"
-	"github.com/JKolios/FieldWorkClassifier/Common/geojson"
 )
+
 const deviceDataMapping = `
 {
 	"mappings": {
@@ -66,12 +67,10 @@ const FieldMapping = `{
     }
 }`
 
-
 var indices = map[string]string{
 	"device_data": deviceDataMapping,
-	"fields": FieldMapping,
+	"fields":      FieldMapping,
 }
-
 
 func InitIndices(elasticClient *elastic.Client) {
 	for index, mapping := range indices {
@@ -109,11 +108,11 @@ func InitFieldLocationDocument(elasticClient *elastic.Client) {
 		Id(FIELD_DOC_ID).
 		Do(context.TODO())
 
-	if err !=nil {
+	if err != nil {
 		log.Fatalf("Failed: checking for existence of the field location doc: %v", err.Error())
 	}
 
-	if ! exists {
+	if !exists {
 
 		//Inserts a default document if none already exists.
 		_, err := elasticClient.Index().

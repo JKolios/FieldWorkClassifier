@@ -1,16 +1,15 @@
 package api
 
 import (
+	"encoding/json"
+	"fmt"
 	"github.com/JKolios/FieldWorkClassifier/Common/config"
 	"github.com/JKolios/FieldWorkClassifier/Indexer/es"
 	"github.com/gin-gonic/gin"
 	"github.com/olahol/melody"
 	"gopkg.in/olivere/elastic.v5"
-	"encoding/json"
-	"fmt"
 	"net/http"
 )
-
 
 func contextInjector(ESClient *elastic.Client, conf *config.Settings) gin.HandlerFunc {
 	return func(c *gin.Context) {
@@ -42,7 +41,7 @@ func SetupAPI(ESClient *elastic.Client, conf *config.Settings) *gin.Engine {
 		v0.GET("/wsDeviceData", func(ginContext *gin.Context) {
 
 			//Upgrade the HTTP connection to WebSocket session and add all needed objects
-			requestKeys := map[string] interface{} {"Client": ESClient}
+			requestKeys := map[string]interface{}{"Client": ESClient}
 			wsRouter.HandleRequestWithKeys(ginContext.Writer, ginContext.Request, requestKeys)
 		})
 	}
@@ -61,7 +60,6 @@ func SetupAPI(ESClient *elastic.Client, conf *config.Settings) *gin.Engine {
 		}
 
 		resp, err = es.CreateDeviceDataDoc(ESClient, incomingDoc)
-
 
 		if err != nil {
 			errorMessage := fmt.Sprintf("{\"error\": \"%v\"}", err.Error())

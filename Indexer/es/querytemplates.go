@@ -30,11 +30,9 @@ const latestDataForDriverQuery = `
 
 type LatestDataforDriverParams struct {
 	DriverId, CompanyId int
-	Timestamp string
+	Timestamp           string
 }
-
 
 var LatestDataforDriverTemplate = template.Must(
 	template.New("LatestDataForDriver").
 		Parse(latestDataForDriverQuery))
-

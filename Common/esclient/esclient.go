@@ -1,11 +1,10 @@
 package esclient
 
 import (
-	"log"
-	"time"
 	"github.com/JKolios/FieldWorkClassifier/Common/utils"
 	"gopkg.in/olivere/elastic.v5"
-
+	"log"
+	"time"
 )
 
 func InitESClient(url, username, password string, doSniff bool) *elastic.Client {

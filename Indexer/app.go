@@ -4,11 +4,9 @@ import (
 	"github.com/JKolios/FieldWorkClassifier/Common/config"
 	"github.com/JKolios/FieldWorkClassifier/Common/esclient"
 	"github.com/JKolios/FieldWorkClassifier/Indexer/api"
-	"log"
 	"github.com/JKolios/FieldWorkClassifier/Indexer/es"
-
+	"log"
 )
-
 
 func main() {
 

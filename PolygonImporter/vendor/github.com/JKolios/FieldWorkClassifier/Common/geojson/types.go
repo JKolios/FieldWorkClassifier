@@ -3,27 +3,27 @@ package geojson
 /*Multipolygon is a representation of a GeoJSON Multipolygon,
 an array of distinct polygons.*/
 type Multipolygon struct {
-	Type string		       `json:"type"`
-	Coordinates [][][]Coordinate       `json:"coordinates"`
+	Type        string           `json:"type"`
+	Coordinates [][][]Coordinate `json:"coordinates"`
 }
 
 func NewMultipolygon(coordinates [][][]Coordinate) Multipolygon {
 	return Multipolygon{
-		Type:"multipolygon",
-		Coordinates:coordinates,
+		Type:        "multipolygon",
+		Coordinates: coordinates,
 	}
 }
 
 /*Polygon is a representation of a GeoJSON point*/
 type Point struct {
-	Type string		       `json:"type"`
-	Coordinates Coordinate       `json:"coordinates"`
+	Type        string     `json:"type"`
+	Coordinates Coordinate `json:"coordinates"`
 }
 
 func NewPoint(coordinates Coordinate) Point {
 	return Point{
-		Type:"point",
-		Coordinates:coordinates,
+		Type:        "point",
+		Coordinates: coordinates,
 	}
 }
 
@@ -32,7 +32,6 @@ func NewPoint(coordinates Coordinate) Point {
   latitude pairs*/
 
 type Coordinate [2]float64
-
 
 type FeatureCollection struct {
 	Features []Feature `json:"features"`

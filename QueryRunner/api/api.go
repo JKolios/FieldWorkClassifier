@@ -6,7 +6,6 @@ import (
 	"gopkg.in/olivere/elastic.v5"
 )
 
-
 func contextInjector(ESClient *elastic.Client, conf *config.Settings) gin.HandlerFunc {
 	return func(c *gin.Context) {
 		c.Set("ESClient", ESClient)

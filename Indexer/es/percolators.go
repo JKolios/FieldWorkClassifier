@@ -1,10 +1,10 @@
 package es
 
 import (
+	"github.com/JKolios/FieldWorkClassifier/Common/utils"
+	"golang.org/x/net/context"
 	"gopkg.in/olivere/elastic.v5"
 	"log"
-	"golang.org/x/net/context"
-	"github.com/JKolios/FieldWorkClassifier/Common/utils"
 )
 
 const drivingPercolator = `
@@ -102,16 +102,16 @@ const repairingPercolator = `
 `
 
 var percolators = map[string]string{
-	"Driving": drivingPercolator,
+	"Driving":     drivingPercolator,
 	"Cultivating": cultivatingPercolator,
-	"Repairing": repairingPercolator,
+	"Repairing":   repairingPercolator,
 }
 
 func InitPercolators(elasticClient *elastic.Client) {
 	for percolatorId, query := range percolators {
 
 		log.Printf("Initializing Percolator: %s", percolatorId)
-		result, err := elasticClient.Index().
+		_, err := elasticClient.Index().
 			Index("device_data").
 			BodyJson(query).
 			Id(percolatorId).
@@ -119,17 +119,8 @@ func InitPercolators(elasticClient *elastic.Client) {
 			Refresh("true").
 			Do(context.TODO())
 
-
-		log.Println(result)
 		utils.CheckFatalError(err)
 
 		log.Printf("Percolator Initialized: %s", percolatorId)
 	}
 }
-
-
-
-
-
-
-
